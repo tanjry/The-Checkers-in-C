@@ -93,12 +93,24 @@ void generate_components(int p2) {
 
 void update_board() {
     system("cls");
+
+    // Update hovered
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             gameboard[i][j].is_hovered = 0;
         }
     }
+    // Update selected
     gameboard[slct.current_y][slct.current_x].is_hovered = 1;
+
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+            gameboard[i][j].is_selected = 0;
+        }
+    }
+    gameboard[slct.selected_y][slct.selected_x].is_selected = 1;
+
+    // Update gameboard
     printf("\n\n");
     printf("+---+---+---+---+---+---+---+---+\n");
     char line1[80], line2[80], line3[80];
@@ -107,20 +119,7 @@ void update_board() {
         strcpy(line2, "|");
         strcpy(line3, "|");
         for (j = 0; j < width; j++) {
-            if (gameboard[i][j].is_hovered) {
-                strcat(line1, "===|");
-                strcat(line3, "===|");
-                if (gameboard[i][j].owner == 0) {
-                    strcat(line2, "= =|");
-                }
-                else if (gameboard[i][j].owner == 1) {
-                    (gameboard[i][j].state == 1 ? strcat(line2, "=x=|") : strcat(line2, "=X=|"));
-                }
-                else if (gameboard[i][j].owner == 2) {
-                    (gameboard[i][j].state == 1 ? strcat(line2, "=o=|") : strcat(line2, "=O=|"));
-                }
-            }
-            else if (gameboard[i][j].is_selected) {
+            if (gameboard[i][j].is_selected) {
                 strcat(line1, "***|");
                 strcat(line3, "***|");
                 if (gameboard[i][j].owner == 0) {
@@ -131,6 +130,19 @@ void update_board() {
                 }
                 else if (gameboard[i][j].owner == 2) {
                     (gameboard[i][j].state == 1 ? strcat(line2, "*o*|") : strcat(line2, "*O*|"));
+                }
+            }
+            else if (gameboard[i][j].is_hovered) {
+                strcat(line1, "===|");
+                strcat(line3, "===|");
+                if (gameboard[i][j].owner == 0) {
+                    strcat(line2, "= =|");
+                }
+                else if (gameboard[i][j].owner == 1) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, "=x=|") : strcat(line2, "=X=|"));
+                }
+                else if (gameboard[i][j].owner == 2) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, "=o=|") : strcat(line2, "=O=|"));
                 }
             }
             else {

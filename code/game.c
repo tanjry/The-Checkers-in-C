@@ -90,6 +90,10 @@ void game_playing() {
         else if (key == 77) {
             slct.current_x = min(slct.current_x + 1, 7);
         }
+        else if (key == ' ') {
+            slct.selected_x = slct.current_x;
+            slct.selected_y = slct.current_y;
+        }
         break;
     }
 }
