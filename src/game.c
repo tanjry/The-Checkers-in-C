@@ -71,7 +71,6 @@ void how_to_play() {
 void game_update() {
     update_board();
     game_playing();
-    swap_player();
 }
 
 void game_playing() {
@@ -92,16 +91,21 @@ void game_playing() {
             slct.current_x = min(slct.current_x + 1, width-1);
         }
         else if (key == ' ') {
-            if (gameboard[slct.current_y][slct.current_x].owner == playing) {
+            if (slct.is_selecting && gameboard[slct.current_y][slct.current_x].owner == 0
+                && ((slct.current_x+1 == slct.selected_x && slct.current_y+(playing == 1 ? 1 : -1) == slct.selected_y)
+                || (slct.current_x-1 == slct.selected_x && slct.current_y+(playing == 1 ? 1 : -1) == slct.selected_y))) {
+                    gameboard[slct.current_y][slct.current_x].owner = playing;
+                    gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                    gameboard[slct.selected_y][slct.selected_x].owner = 0;
+                    slct.selected_x = width;
+                    slct.selected_y = height;
+                    slct.is_selecting = 0;
+                    swap_player();
+            }
+            else if (gameboard[slct.current_y][slct.current_x].owner == playing) {
                 slct.selected_x = slct.current_x;
                 slct.selected_y = slct.current_y;
                 slct.is_selecting = 1;
-            }
-            if (slct.is_selecting) {
-                if (gameboard[slct.selected_y-1][slct.selected_x+1].owner == 0 ||
-                gameboard[slct.selected_y-1][slct.selected_x-1].owner == 0) {
-
-                }
             }
         }
         else if (key == 27) {
