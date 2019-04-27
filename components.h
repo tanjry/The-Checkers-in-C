@@ -84,10 +84,72 @@ void generate_components(int p2) {
         }
     }
 
+    gameboard[0][0].is_hovered = 1;
     slct.current_x = 0;
-    slct.current_y = 7;
+    slct.current_y = 0;
     slct.selected_x = 8;
     slct.selected_y = 8;
+}
+
+void update_board() {
+    system("cls");
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+            gameboard[i][j].is_hovered = 0;
+        }
+    }
+    gameboard[slct.current_y][slct.current_x].is_hovered = 1;
+    printf("\n\n");
+    printf("+---+---+---+---+---+---+---+---+\n");
+    char line1[80], line2[80], line3[80];
+    for (i = 0; i < height; i++) {
+        strcpy(line1, "|");
+        strcpy(line2, "|");
+        strcpy(line3, "|");
+        for (j = 0; j < width; j++) {
+            if (gameboard[i][j].is_hovered) {
+                strcat(line1, "===|");
+                strcat(line3, "===|");
+                if (gameboard[i][j].owner == 0) {
+                    strcat(line2, "= =|");
+                }
+                else if (gameboard[i][j].owner == 1) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, "=x=|") : strcat(line2, "=X=|"));
+                }
+                else if (gameboard[i][j].owner == 2) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, "=o=|") : strcat(line2, "=O=|"));
+                }
+            }
+            else if (gameboard[i][j].is_selected) {
+                strcat(line1, "***|");
+                strcat(line3, "***|");
+                if (gameboard[i][j].owner == 0) {
+                    strcat(line2, "* *|");
+                }
+                else if (gameboard[i][j].owner == 1) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, "*x*|") : strcat(line2, "*X*|"));
+                }
+                else if (gameboard[i][j].owner == 2) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, "*o*|") : strcat(line2, "*O*|"));
+                }
+            }
+            else {
+                strcat(line1, "   |");
+                strcat(line3, "   |");
+                if (gameboard[i][j].owner == 0) {
+                    strcat(line2, "   |");
+                }
+                else if (gameboard[i][j].owner == 1) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, " x |") : strcat(line2, " X |"));
+                }
+                else if (gameboard[i][j].owner == 2) {
+                    (gameboard[i][j].state == 1 ? strcat(line2, " o |") : strcat(line2, " O |"));
+                }
+            }
+        }
+        printf("%s\n%s\n%s\n", line1, line2, line3);
+        printf("+---+---+---+---+---+---+---+---+\n");
+    }
 }
 
 #endif

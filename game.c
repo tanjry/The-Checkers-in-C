@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include "components.h"
+#include "utils.h"
 
 int game_over = 1, i, j;
 
@@ -58,11 +59,7 @@ void game_start(int p2) {
     game_over = 0;
     generate_components(p2);
     while (!game_over) {
-        char end;
         game_update();
-        game_playing();
-        end = getch();
-        if (end == 's') break;
     }
 }
 
@@ -72,27 +69,27 @@ void how_to_play() {
 }
 
 void game_update() {
-    system("cls");
-    printf("\n\n");
-    for (i = 0; i < height; i++) {
-        printf("\t\t\t+---+---+---+---+---+---+---+---+\n\t\t\t");
-        printf("|");
-        for (j = 0; j < width; j++) {
-            if (gameboard[i][j].owner == 0) {
-                printf("   |");
-            }
-            else if (gameboard[i][j].owner == 1) {
-                printf(" x |");
-            }
-            else if (gameboard[i][j].owner == 2) {
-                printf(" o |");
-            }
-        }
-        printf("\n");
-    }
-    printf("\t\t\t+---+---+---+---+---+---+---+---+");
+    update_board();
+    game_playing();
 }
 
 void game_playing() {
-
+    int key;
+    while (1) {
+        key = getch();
+        if (key == 0 || key == 0xE0) key = getch();
+        if (key == 72) {
+            slct.current_y = max(slct.current_y - 1, 0);
+        }
+        else if (key == 80) {
+            slct.current_y = min(slct.current_y + 1, 7);
+        }
+        else if (key == 75) {
+            slct.current_x = max(slct.current_x - 1, 0);
+        }
+        else if (key == 77) {
+            slct.current_x = min(slct.current_x + 1, 7);
+        }
+        break;
+    }
 }
