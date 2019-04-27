@@ -33,10 +33,16 @@ struct selector {
     int current_y;
     int selected_x;
     int selected_y;
+    int is_selecting;
 } slct;
 
-int i, j;
+int i, j, playing;
 struct cell gameboard[height][width];
+
+void swap_player() {
+    /* Swap playing player */
+    playing = (playing == 1 ? 2 : 1);
+}
 
 void generate_components(int p2) {
     /* Generate cell */
@@ -87,22 +93,23 @@ void generate_components(int p2) {
     gameboard[0][0].is_hovered = 1;
     slct.current_x = 0;
     slct.current_y = 0;
-    slct.selected_x = 8;
-    slct.selected_y = 8;
+    slct.selected_x = width;
+    slct.selected_y = height;
+    playing = 1; // Who is playing? (1 or 2)
 }
 
 void update_board() {
     system("cls");
 
-    // Update hovered
+    /* Update hovered */
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             gameboard[i][j].is_hovered = 0;
         }
     }
-    // Update selected
     gameboard[slct.current_y][slct.current_x].is_hovered = 1;
 
+    /* Update selected */
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             gameboard[i][j].is_selected = 0;
@@ -110,7 +117,7 @@ void update_board() {
     }
     gameboard[slct.selected_y][slct.selected_x].is_selected = 1;
 
-    // Update gameboard
+    /* Update gameboard */
     printf("\n\n");
     printf("+---+---+---+---+---+---+---+---+\n");
     char line1[80], line2[80], line3[80];

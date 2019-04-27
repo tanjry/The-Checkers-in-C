@@ -71,6 +71,7 @@ void how_to_play() {
 void game_update() {
     update_board();
     game_playing();
+    swap_player();
 }
 
 void game_playing() {
@@ -82,18 +83,31 @@ void game_playing() {
             slct.current_y = max(slct.current_y - 1, 0);
         }
         else if (key == 80) {
-            slct.current_y = min(slct.current_y + 1, 7);
+            slct.current_y = min(slct.current_y + 1, height-1);
         }
         else if (key == 75) {
             slct.current_x = max(slct.current_x - 1, 0);
         }
         else if (key == 77) {
-            slct.current_x = min(slct.current_x + 1, 7);
+            slct.current_x = min(slct.current_x + 1, width-1);
         }
         else if (key == ' ') {
-            slct.selected_x = slct.current_x;
-            slct.selected_y = slct.current_y;
+            if (gameboard[slct.current_y][slct.current_x].owner == playing) {
+                slct.selected_x = slct.current_x;
+                slct.selected_y = slct.current_y;
+                slct.is_selecting = 1;
+            }
+            if (slct.is_selecting) {
+                if (gameboard[slct.selected_y-1][slct.selected_x+1].owner == 0 ||
+                gameboard[slct.selected_y-1][slct.selected_x-1].owner == 0) {
+
+                }
+            }
         }
-        break;
+        else if (key == 27) {
+            game_over = 1;
+            break;
+        }
+        update_board();
     }
 }
