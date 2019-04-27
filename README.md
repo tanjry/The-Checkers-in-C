@@ -1,4 +1,4 @@
-# The-Checkers-in-C
+# The Checkers in C
 ## Computer Programming Mini Project
 This Project is a part of course 06016315 Computer Programming (2018)
 
