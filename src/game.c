@@ -69,13 +69,13 @@ void how_to_play() {
 }
 
 void game_update() {
-    update_board();
     game_playing();
 }
 
 void game_playing() {
     int key;
     while (1) {
+        update_board();
         key = getch();
         if (key == 0 || key == 0xE0) key = getch();
         if (key == 72) {
@@ -91,27 +91,51 @@ void game_playing() {
             slct.current_x = min(slct.current_x + 1, width-1);
         }
         else if (key == ' ') {
-            if (slct.is_selecting && gameboard[slct.current_y][slct.current_x].owner == 0
-                && ((slct.current_x+1 == slct.selected_x && slct.current_y+(playing == 1 ? 1 : -1) == slct.selected_y)
-                || (slct.current_x-1 == slct.selected_x && slct.current_y+(playing == 1 ? 1 : -1) == slct.selected_y))) {
-                    gameboard[slct.current_y][slct.current_x].owner = playing;
-                    gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
-                    gameboard[slct.selected_y][slct.selected_x].owner = 0;
-                    slct.selected_x = width;
-                    slct.selected_y = height;
-                    slct.is_selecting = 0;
-                    swap_player();
+            /* Kill enemy while moving */
+            if (can_kill_left() || can_kill_right()) {
+                // Move the checker
+                gameboard[slct.current_y][slct.current_x].owner = playing;
+                gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                // Kill enemy
+                gameboard[slct.selected_y + foward()][slct.selected_x + 1].owner = 0;
+                gameboard[slct.selected_y + foward()][slct.selected_x + 1].owner = 0;
+
+                // Move selector
+                slct.selected_x = slct.current_x;
+                slct.selected_y = slct.current_y;
+
+                if (can_kill_left() || can_kill_right()) continue; // Keep killing
+
+                // Clear selector
+                slct.selected_x = width;
+                slct.selected_y = height;
+                swap_turn();
             }
+
+            /* Moving a checker */
+            else if (can_move()) {
+                // Move the checker
+                gameboard[slct.current_y][slct.current_x].owner = playing;
+                gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                // Clear selector
+                slct.selected_x = width;
+                slct.selected_y = height;
+                swap_turn();
+            }
+
+            /* Selecting */
             else if (gameboard[slct.current_y][slct.current_x].owner == playing) {
                 slct.selected_x = slct.current_x;
                 slct.selected_y = slct.current_y;
-                slct.is_selecting = 1;
             }
         }
         else if (key == 27) {
             game_over = 1;
             break;
         }
-        update_board();
     }
 }

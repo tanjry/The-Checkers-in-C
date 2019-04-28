@@ -16,7 +16,7 @@ struct player {
 } player1, player2;
 
 struct cell {
-    /* Variables
+    /*
     owner: owner of this cell
     state:  0 => Empty
             1 => Men
@@ -29,20 +29,21 @@ struct cell {
 };
 
 struct selector {
+    /*
+    current_x: current x-pos of the selector on the gameboard
+    current_y: current y-pos of the selector on the gameboard
+    selected_x: selected x-pos of a checker on the gameboard (this checker will be move)
+    selected_y: selected y-pos of a checker on the gameboard (this checker will be move)
+    is_selecting: (0 if nothing is selected, 1 if a checker is selected)
+    */
     int current_x;
     int current_y;
     int selected_x;
     int selected_y;
-    int is_selecting;
 } slct;
 
 int i, j, playing;
 struct cell gameboard[height][width];
-
-void swap_player() {
-    /* Swap playing player */
-    playing = (playing == 1 ? 2 : 1);
-}
 
 void generate_components(int p2) {
     /* Generate cell */
@@ -90,9 +91,8 @@ void generate_components(int p2) {
         }
     }
 
-    gameboard[0][0].is_hovered = 1;
     slct.current_x = 0;
-    slct.current_y = 0;
+    slct.current_y = height - 1;
     slct.selected_x = width;
     slct.selected_y = height;
     playing = 1; // Who is playing? (1 or 2)
