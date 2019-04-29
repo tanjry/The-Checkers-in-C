@@ -65,17 +65,45 @@ int king_move() {
     int x1, x2, y1, y2;
     int dif_x = abs(slct.current_x - slct.selected_x);
     int dif_y = abs(slct.current_y - slct.selected_y);
-    if (dif_x != dif_y) return 0;
+    if (dif_x != dif_y) return 0;   // can't walk straight !
     x1 = slct.current_x, y1 = slct.current_y;
     x2 = slct.selected_x, y2 = slct.selected_y;
     while (x1 != x2) {
         if (gameboard[y1][x1].owner != 0) {
             return 0;
         }
-        (x1 > x2 ? x1--: x1++);
-        (y1 > y2 ? y1--: y1++);
+        (x1 > x2 ? x1-- : x1++);
+        (y1 > y2 ? y1-- : y1++);
     }
     return 1;
+}
+
+int king_kill() {
+    /* return 1 if a selected checker can kill (king) */
+    int x1, x2, y1, y2;
+    int dif_x = abs(slct.current_x - slct.selected_x);
+    int dif_y = abs(slct.current_y - slct.selected_y);
+    if (dif_x != dif_y) return 0;   // can't walk straight
+    x1 = slct.selected_x, y1 = slct.selected_y;
+    x2 = slct.current_x, y2 = slct.current_y;
+    while (x1 != x2) {
+        (x1 > x2 ? x1-- : x1++);
+        (y1 > y2 ? y1-- : y1++);
+        if (gameboard[y1][x1].owner == 0) {
+            continue;
+        }
+        else if (gameboard[y1][x1].owner == opponent() && x1 + (x1 > x2 ? -1 : 1) == x2
+                && y1 + (y1 > y2 ? -1 : 1) && gameboard[y2][x2].owner == 0) {
+            // Kill enemy
+            gameboard[y1][x1].owner = 0;
+            gameboard[y1][x1].state = 0;
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    return 0;
 }
 
 #endif

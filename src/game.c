@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
-#include <stdlib.h>
 #include "components.h"
 #include "utils.h"
 
@@ -62,6 +61,7 @@ void game_start(int p2) {
     while (!game_over) {
         game_update();
     }
+    printf("Game Over !\nPlayer %d win !!", opponent());
 }
 
 void how_to_play() {
@@ -100,7 +100,29 @@ void game_playing() {
             }
 
             else if (gameboard[slct.selected_y][slct.selected_x].state == 2) {
-                if (king_move()) {
+                if (king_kill()) {
+                    // Move the checker
+                    gameboard[slct.current_y][slct.current_x].owner = playing;
+                    gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                    gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                    if (playing == 1) {
+                        player2.remaining -= 1;
+                    }
+                    else {
+                        player1.remaining -= 1;
+                    }
+
+                    // Move selector
+                    slct.selected_x = slct.current_x;
+                    slct.selected_y = slct.current_y;
+
+                    // Clear selector
+                    slct.selected_x = width;
+                    slct.selected_y = height;
+                    swap_turn();
+                }
+                else if (king_move()) {
                     // Move the checker
                     gameboard[slct.current_y][slct.current_x].owner = playing;
                     gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
@@ -129,12 +151,12 @@ void game_playing() {
 
                     // Kill enemy
                     gameboard[slct.selected_y + foward()][slct.selected_x + direction].owner = 0;
-                    gameboard[slct.selected_y + foward()][slct.selected_x + direction].owner = 0;
+                    gameboard[slct.selected_y + foward()][slct.selected_x + direction].state = 0;
                     if (playing == 1) {
-                        player1.remaining -= 1;
+                        player2.remaining -= 1;
                     }
                     else {
-                        player2.remaining -= 1;
+                        player1.remaining -= 1;
                     }
 
                     // Move selector
@@ -176,6 +198,11 @@ void game_playing() {
             }
         }
         else if (key == 27) {
+            game_over = 1;
+            break;
+        }
+        if (player1.remaining == 0 || player2.remaining == 0) {
+            update_board();
             game_over = 1;
             break;
         }
