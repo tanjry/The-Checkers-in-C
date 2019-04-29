@@ -118,7 +118,7 @@ void update_board() {
     gameboard[slct.selected_y][slct.selected_x].is_selected = 1;
 
     /* Update gameboard */
-    printf("\n\n");
+    printf("\nPlayer %d's turn\n", playing);
     printf("+---+---+---+---+---+---+---+---+\n");
     char line1[80], line2[80], line3[80];
     for (i = 0; i < height; i++) {

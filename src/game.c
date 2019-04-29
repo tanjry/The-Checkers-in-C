@@ -106,7 +106,14 @@ void game_playing() {
                 slct.selected_x = slct.current_x;
                 slct.selected_y = slct.current_y;
 
-                if (can_kill_left() || can_kill_right()) continue; // Keep killing
+                // Keep killing on the left
+                slct.current_x = max(slct.current_x-2, 0);
+                slct.current_y += foward() * 2;
+                if (can_kill_left()) continue;
+
+                // Keep killing on the right
+                slct.current_x = min(slct.current_x+4, 7);
+                if (can_kill_right()) continue;
 
                 // Clear selector
                 slct.selected_x = width;
