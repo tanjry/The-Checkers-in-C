@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "components.h"
 #include "utils.h"
 
@@ -91,53 +92,87 @@ void game_playing() {
             slct.current_x = min(slct.current_x + 1, width-1);
         }
         else if (key == ' ') {
-            /* Kill enemy while moving */
-            if (can_kill_left() || can_kill_right()) {
-                // Move the checker
-                gameboard[slct.current_y][slct.current_x].owner = playing;
-                gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
-                gameboard[slct.selected_y][slct.selected_x].owner = 0;
-
-                // Kill enemy
-                gameboard[slct.selected_y + foward()][slct.selected_x + 1].owner = 0;
-                gameboard[slct.selected_y + foward()][slct.selected_x + 1].owner = 0;
-
-                // Move selector
-                slct.selected_x = slct.current_x;
-                slct.selected_y = slct.current_y;
-
-                // Keep killing on the left
-                slct.current_x = max(slct.current_x-2, 0);
-                slct.current_y += foward() * 2;
-                if (can_kill_left()) continue;
-
-                // Keep killing on the right
-                slct.current_x = min(slct.current_x+4, 7);
-                if (can_kill_right()) continue;
-
-                // Clear selector
-                slct.selected_x = width;
-                slct.selected_y = height;
-                swap_turn();
-            }
-
-            /* Moving a checker */
-            else if (can_move()) {
-                // Move the checker
-                gameboard[slct.current_y][slct.current_x].owner = playing;
-                gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
-                gameboard[slct.selected_y][slct.selected_x].owner = 0;
-
-                // Clear selector
-                slct.selected_x = width;
-                slct.selected_y = height;
-                swap_turn();
-            }
 
             /* Selecting */
-            else if (gameboard[slct.current_y][slct.current_x].owner == playing) {
+            if (gameboard[slct.current_y][slct.current_x].owner == playing) {
                 slct.selected_x = slct.current_x;
                 slct.selected_y = slct.current_y;
+            }
+
+            else if (gameboard[slct.selected_y][slct.selected_x].state == 2) {
+                if (king_move()) {
+                    // Move the checker
+                    gameboard[slct.current_y][slct.current_x].owner = playing;
+                    gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                    gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                    // Clear selector
+                    slct.selected_x = width;
+                    slct.selected_y = height;
+                    swap_turn();
+                }
+            }
+
+            else if (gameboard[slct.selected_y][slct.selected_x].state == 1) {
+                /* Kill enemy while moving */
+                if (can_kill_left() || can_kill_right()) {
+                    int direction = (can_kill_right() ? 1 : -1);
+                    // Move the checker
+                    gameboard[slct.current_y][slct.current_x].owner = playing;
+                    gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                    gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                    // Become King
+                    if ((playing == 1 && slct.current_y == 0) || (playing == 2 && slct.current_y == 7)) {
+                        gameboard[slct.current_y][slct.current_x].state = 2;
+                    }
+
+                    // Kill enemy
+                    gameboard[slct.selected_y + foward()][slct.selected_x + direction].owner = 0;
+                    gameboard[slct.selected_y + foward()][slct.selected_x + direction].owner = 0;
+                    if (playing == 1) {
+                        player1.remaining -= 1;
+                    }
+                    else {
+                        player2.remaining -= 1;
+                    }
+
+                    // Move selector
+                    slct.selected_x = slct.current_x;
+                    slct.selected_y = slct.current_y;
+
+                    // Keep killing on the left
+                    slct.current_x = max(slct.current_x-2, 0);
+                    slct.current_y += foward() * 2;
+                    if (can_kill_left()) continue;
+
+                    // Keep killing on the right
+                    slct.current_x = min(slct.current_x+4, 7);
+                    if (can_kill_right()) continue;
+
+                    // Clear selector
+                    slct.selected_x = width;
+                    slct.selected_y = height;
+                    swap_turn();
+                }
+
+                /* Moving a checker */
+                else if (can_move()) {
+                    // Move the checker
+                    gameboard[slct.current_y][slct.current_x].owner = playing;
+                    gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
+                    gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                    // Become King
+                    if ((playing == 1 && slct.current_y == 0) || (playing == 2 && slct.current_y == 7)) {
+                        gameboard[slct.current_y][slct.current_x].state = 2;
+                    }
+
+                    // Clear selector
+                    slct.selected_x = width;
+                    slct.selected_y = height;
+                    swap_turn();
+                }
             }
         }
         else if (key == 27) {
