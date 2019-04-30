@@ -138,20 +138,21 @@ void game_playing() {
             else if (gameboard[slct.selected_y][slct.selected_x].state == 1) {
                 /* Kill enemy while moving */
                 if (can_kill_left() || can_kill_right()) {
-                    int direction = (can_kill_right() ? 1 : -1);
+                    int dir = (can_kill_right() ? 1 : -1);
                     // Move the checker
                     gameboard[slct.current_y][slct.current_x].owner = playing;
                     gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
                     gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                    // Kill enemy
+                    gameboard[slct.selected_y + foward()][slct.selected_x + dir].owner = 0;
+                    gameboard[slct.selected_y + foward()][slct.selected_x + dir].state = 0;
 
                     // Become King
                     if ((playing == 1 && slct.current_y == 0) || (playing == 2 && slct.current_y == 7)) {
                         gameboard[slct.current_y][slct.current_x].state = 2;
                     }
 
-                    // Kill enemy
-                    gameboard[slct.selected_y + foward()][slct.selected_x + direction].owner = 0;
-                    gameboard[slct.selected_y + foward()][slct.selected_x + direction].state = 0;
                     if (playing == 1) {
                         player2.remaining -= 1;
                     }
@@ -164,18 +165,27 @@ void game_playing() {
                     slct.selected_y = slct.current_y;
 
                     // Keep killing on the left
-                    slct.current_x = max(slct.current_x-2, 0);
+                    slct.current_x = max(slct.current_x - 2, 0);
                     slct.current_y += foward() * 2;
                     if (can_kill_left()) continue;
 
                     // Keep killing on the right
-                    slct.current_x = min(slct.current_x+4, 7);
+                    slct.current_x = slct.selected_x;
+                    slct.current_x = min(slct.current_x + 2, 7);
                     if (can_kill_right()) continue;
 
                     // Clear selector
                     slct.selected_x = width;
                     slct.selected_y = height;
                     swap_turn();
+                    if (playing == 1) {
+                        slct.current_x = 1;
+                        slct.current_y = 6;
+                    }
+                    else {
+                        slct.current_x = 0;
+                        slct.current_y = 1;
+                    }
                 }
 
                 /* Moving a checker */
