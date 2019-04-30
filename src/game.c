@@ -76,6 +76,7 @@ void game_update() {
 void game_playing() {
     int key;
     while (1) {
+        warp:
         update_board();
         key = getch();
         if (key == 0 || key == 0xE0) key = getch();
@@ -102,9 +103,16 @@ void game_playing() {
             else if (gameboard[slct.selected_y][slct.selected_x].state == 2) {
                 if (king_kill()) {
                     // Move the checker
+                    int dir_x, dir_y;
                     gameboard[slct.current_y][slct.current_x].owner = playing;
                     gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
                     gameboard[slct.selected_y][slct.selected_x].owner = 0;
+
+                    // Kill enemy
+                    dir_x = (slct.current_x < slct.selected_x ? 1 : -1);
+                    dir_y = (slct.current_y < slct.selected_y ? 1 : -1);
+                    gameboard[slct.current_y + dir_y][slct.current_x + dir_x].owner = 0;
+                    gameboard[slct.current_y + dir_y][slct.current_x + dir_x].state = 0;
 
                     if (playing == 1) {
                         player2.remaining -= 1;
@@ -116,6 +124,49 @@ void game_playing() {
                     // Move selector
                     slct.selected_x = slct.current_x;
                     slct.selected_y = slct.current_y;
+
+                    // Keep killing
+                    int end_x, end_y;
+                    // Top Left
+                    slct.current_x = slct.selected_x;
+                    slct.current_y = slct.selected_y;
+                    end_x = slct.current_x - min(slct.selected_x, slct.selected_y);
+                    end_y = slct.current_y - min(slct.selected_x, slct.selected_y);
+                    while (slct.current_x >= end_x) {
+                        if (king_kill()) goto warp;
+                        slct.current_x--;
+                        slct.current_y--;
+                    }
+                    // Top Right
+                    slct.current_x = slct.selected_x;
+                    slct.current_y = slct.selected_y;
+                    end_x = slct.current_x + min(7 - slct.selected_x, slct.selected_y);
+                    end_y = slct.current_y - min(7 - slct.selected_x, slct.selected_y);
+                    while (slct.current_x <= end_x) {
+                        if (king_kill()) goto warp;
+                        slct.current_x++;
+                        slct.current_y--;
+                    }
+                    // Btm Left
+                    slct.current_x = slct.selected_x;
+                    slct.current_y = slct.selected_y;
+                    end_x = slct.current_x - min(slct.selected_x, 7 - slct.selected_y);
+                    end_y = slct.current_y + min(slct.selected_x, 7 - slct.selected_y);
+                    while (slct.current_x >= end_x) {
+                        if (king_kill()) goto warp;
+                        slct.current_x--;
+                        slct.current_y++;
+                    }
+                    // Btm Right
+                    slct.current_x = slct.selected_x;
+                    slct.current_y = slct.selected_y;
+                    end_x = slct.current_x + min(7 - slct.selected_x, 7 - slct.selected_y);
+                    end_y = slct.current_y + min(7 - slct.selected_x, 7 - slct.selected_y);
+                    while (slct.current_x <= end_x) {
+                        if (king_kill()) goto warp;
+                        slct.current_x++;
+                        slct.current_y++;
+                    }
 
                     // Clear selector
                     slct.selected_x = width;
@@ -167,25 +218,17 @@ void game_playing() {
                     // Keep killing on the left
                     slct.current_x = max(slct.current_x - 2, 0);
                     slct.current_y += foward() * 2;
-                    if (can_kill_left()) continue;
+                    if (can_kill_left()) goto warp;
 
                     // Keep killing on the right
                     slct.current_x = slct.selected_x;
                     slct.current_x = min(slct.current_x + 2, 7);
-                    if (can_kill_right()) continue;
+                    if (can_kill_right()) goto warp;
 
                     // Clear selector
                     slct.selected_x = width;
                     slct.selected_y = height;
                     swap_turn();
-                    if (playing == 1) {
-                        slct.current_x = 1;
-                        slct.current_y = 6;
-                    }
-                    else {
-                        slct.current_x = 0;
-                        slct.current_y = 1;
-                    }
                 }
 
                 /* Moving a checker */

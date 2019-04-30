@@ -20,6 +20,14 @@ int opponent() {
 void swap_turn() {
     /* Swap to opponent's turn */
     playing = opponent();
+    if (playing == 1) {
+        slct.current_x = 1;
+        slct.current_y = 6;
+    }
+    else {
+        slct.current_x = 0;
+        slct.current_y = 1;
+    }
 }
 
 int foward() {
@@ -94,12 +102,9 @@ int king_kill() {
         }
         else if (gameboard[y1][x1].owner == opponent() && x1 + (x1 > x2 ? -1 : 1) == x2
                 && y1 + (y1 > y2 ? -1 : 1) && gameboard[y2][x2].owner == 0) {
-            // Kill enemy
-            gameboard[y1][x1].owner = 0;
-            gameboard[y1][x1].state = 0;
             return 1;
         }
-        else{
+        else {
             return 0;
         }
     }
