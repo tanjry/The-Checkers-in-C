@@ -31,9 +31,8 @@ void main_menu() {
     printf("%40s%-40s", "|The Ch", "eckers|");
     printf("%40s%-40s", "-------", "-------");
     printf("\n\n\n\n\n");
-    printf("%40s%-40s\n\n\n", "1. Player ", "VS Player");
-    printf("%40s%-40s\n\n\n", "2. Player V", "S Computer");
-    printf("%40s%-40s\n\n\n\n\n\n\n", "3. How t", "o play");
+    printf("%40s%-40s\n\n\n", "1. Star", "t Game");
+    printf("%40s%-40s\n\n\n\n\n\n\n", "2. How t", "o play");
     while (1) {
         cmd = getch();
         if (cmd == '1') {
@@ -42,11 +41,6 @@ void main_menu() {
             break;
         }
         else if (cmd == '2') {
-            // Play with bot
-            game_start(1);
-            break;
-        }
-        else if (cmd == '3') {
             // View how to play
             how_to_play();
             break;
@@ -74,7 +68,7 @@ void game_update() {
 }
 
 void game_playing() {
-    int key;
+    int key, temp_x1, temp_y1, temp_x2, temp_y2, can_kill = 0;
     while (1) {
         warp:
         update_board();
@@ -93,6 +87,16 @@ void game_playing() {
             slct.current_x = min(slct.current_x + 1, width-1);
         }
         else if (key == ' ') {
+            temp_x1 = slct.current_x;
+            temp_y1 = slct.current_y;
+            temp_x2 = slct.selected_x;
+            temp_y2 = slct.selected_y;
+            can_kill = force_kill();
+
+            slct.current_x = temp_x1;
+            slct.current_y = temp_y1;
+            slct.selected_x = temp_x2;
+            slct.selected_y = temp_y2;
 
             /* Selecting */
             if (gameboard[slct.current_y][slct.current_x].owner == playing) {
@@ -187,6 +191,7 @@ void game_playing() {
             }
 
             else if (gameboard[slct.selected_y][slct.selected_x].state == 1) {
+
                 /* Kill enemy while moving */
                 if (can_kill_left() || can_kill_right()) {
                     int dir = (can_kill_right() ? 1 : -1);
@@ -232,7 +237,7 @@ void game_playing() {
                 }
 
                 /* Moving a checker */
-                else if (can_move()) {
+                else if (can_move() && !can_kill) {
                     // Move the checker
                     gameboard[slct.current_y][slct.current_x].owner = playing;
                     gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;

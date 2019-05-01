@@ -111,4 +111,26 @@ int king_kill() {
     return 0;
 }
 
+int force_kill() {
+    // Force kill
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+            if (playing == gameboard[i][j].owner && gameboard[i][j].state == 1) {
+                slct.selected_x = j;
+                slct.selected_y = i;
+                slct.current_x = max(j - 2, 0);
+                slct.current_y = (playing == 1 ? max(i + (2 * foward()), 0) : min(i + (2 * foward()), 7));
+                if (can_kill_left()) {
+                    return 1;
+                }
+                slct.current_x = min(j + 2, 7);
+                if (can_kill_right()) {
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 #endif
