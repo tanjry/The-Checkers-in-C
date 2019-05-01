@@ -10,7 +10,6 @@ int game_over = 1, i, j;
 void game_init();
 void main_menu();
 void game_start(int p2);
-void how_to_play();
 void game_update();
 void game_playing();
 
@@ -30,19 +29,13 @@ void main_menu() {
     printf("\n\n%40s%-40s", "-------", "-------");
     printf("%40s%-40s", "|The Ch", "eckers|");
     printf("%40s%-40s", "-------", "-------");
-    printf("\n\n\n\n\n");
-    printf("%40s%-40s\n\n\n", "1. Star", "t Game");
-    printf("%40s%-40s\n\n\n\n\n\n\n", "2. How t", "o play");
+    printf("\n\n\n\n\n\n\n\n\n");
+    printf("%40s%-40s\n\n\n\n\n\n\n", "Press [g] to ", "start game");
     while (1) {
         cmd = getch();
-        if (cmd == '1') {
+        if (cmd == 'g') {
             // Play with friend
             game_start(0);
-            break;
-        }
-        else if (cmd == '2') {
-            // View how to play
-            how_to_play();
             break;
         }
     }
@@ -55,12 +48,8 @@ void game_start(int p2) {
     while (!game_over) {
         game_update();
     }
+    printf("\a");
     printf("Game Over !\nPlayer %d win !!", opponent());
-}
-
-void how_to_play() {
-    system("cls");
-    printf("Go kill yourself.");
 }
 
 void game_update() {
@@ -177,7 +166,7 @@ void game_playing() {
                     slct.selected_y = height;
                     swap_turn();
                 }
-                else if (king_move()) {
+                else if (king_move() && !can_kill) {
                     // Move the checker
                     gameboard[slct.current_y][slct.current_x].owner = playing;
                     gameboard[slct.current_y][slct.current_x].state = gameboard[slct.selected_y][slct.selected_x].state;
@@ -191,7 +180,6 @@ void game_playing() {
             }
 
             else if (gameboard[slct.selected_y][slct.selected_x].state == 1) {
-
                 /* Kill enemy while moving */
                 if (can_kill_left() || can_kill_right()) {
                     int dir = (can_kill_right() ? 1 : -1);
@@ -222,7 +210,7 @@ void game_playing() {
 
                     // Keep killing on the left
                     slct.current_x = max(slct.current_x - 2, 0);
-                    slct.current_y += foward() * 2;
+                    slct.current_y = (playing == 1 ? max(slct.current_y + foward() * 2, 0) : min(slct.current_y + foward() * 2, 7));
                     if (can_kill_left()) goto warp;
 
                     // Keep killing on the right

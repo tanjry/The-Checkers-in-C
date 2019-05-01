@@ -96,7 +96,6 @@ void generate_components(int p2) {
     slct.selected_x = width;
     slct.selected_y = height;
     playing = 1; // Who is playing? (1 or 2)
-    gameboard[6][1].state = 2;
 }
 
 void update_board() {
