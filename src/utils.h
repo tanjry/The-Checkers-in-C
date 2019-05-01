@@ -112,7 +112,8 @@ int king_kill() {
 }
 
 int force_kill() {
-    // Force kill
+    /* return 1 if any playing Player's checker can kill something */
+    int end_x, end_y;
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             if (playing == gameboard[i][j].owner && gameboard[i][j].state == 1) {
@@ -126,6 +127,50 @@ int force_kill() {
                 slct.current_x = min(j + 2, 7);
                 if (can_kill_right()) {
                     return 1;
+                }
+            }
+            else if (playing == gameboard[i][j].owner && gameboard[i][j].state == 2) {
+                slct.selected_x = j;
+                slct.selected_y = i;
+                // Top Left
+                slct.current_x = slct.selected_x;
+                slct.current_y = slct.selected_y;
+                end_x = slct.current_x - min(slct.selected_x, slct.selected_y);
+                end_y = slct.current_y - min(slct.selected_x, slct.selected_y);
+                while (slct.current_x >= end_x) {
+                    if (king_kill()) return 1;
+                    slct.current_x--;
+                    slct.current_y--;
+                }
+                // Top Right
+                slct.current_x = slct.selected_x;
+                slct.current_y = slct.selected_y;
+                end_x = slct.current_x + min(7 - slct.selected_x, slct.selected_y);
+                end_y = slct.current_y - min(7 - slct.selected_x, slct.selected_y);
+                while (slct.current_x <= end_x) {
+                    if (king_kill()) return 1;
+                    slct.current_x++;
+                    slct.current_y--;
+                }
+                // Btm Left
+                slct.current_x = slct.selected_x;
+                slct.current_y = slct.selected_y;
+                end_x = slct.current_x - min(slct.selected_x, 7 - slct.selected_y);
+                end_y = slct.current_y + min(slct.selected_x, 7 - slct.selected_y);
+                while (slct.current_x >= end_x) {
+                    if (king_kill()) return 1;
+                    slct.current_x--;
+                    slct.current_y++;
+                }
+                // Btm Right
+                slct.current_x = slct.selected_x;
+                slct.current_y = slct.selected_y;
+                end_x = slct.current_x + min(7 - slct.selected_x, 7 - slct.selected_y);
+                end_y = slct.current_y + min(7 - slct.selected_x, 7 - slct.selected_y);
+                while (slct.current_x <= end_x) {
+                    if (king_kill()) return 1;
+                    slct.current_x++;
+                    slct.current_y++;
                 }
             }
         }
